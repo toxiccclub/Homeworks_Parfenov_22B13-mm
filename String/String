@@ -1,0 +1,142 @@
+№ 1
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <vector>
+
+using namespace std;
+
+bool is_valid(string& s) {
+	vector<int> parts;
+	stringstream ss(s);
+	string part;
+
+	while (getline(ss, part, '.')) {
+		if (part != "") {
+			int num = stoi(part);
+			if (num < 0 || num > 255) {
+				return false;
+			}
+			parts.push_back(num);
+		}
+		else {
+			return false;
+		}
+	}
+	return parts.size() == 4;
+}
+
+int main() {
+	string ip;
+	cin >> ip;
+	if (is_valid(ip)) {
+		cout << "The correct IP" << endl;
+	}
+	else {
+		cout << "Error" << endl;
+	}
+	return 0;
+
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+
+№2
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+string number_2(string& origin, string& substring) {
+	string res = origin;
+	int pos = res.find(substring, 0);
+	while (pos != string::npos) {
+		res.replace(pos, substring.size(), "(" + substring + ")");
+		pos = res.find(substring, pos + 2 + substring.size());
+	}
+	return res;
+}
+
+int main() {
+	string origin, substring;
+	cin >> origin >> substring;
+	string improved = number_2(origin, substring);
+	cout << improved;
+	return 0;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+№3
+#include <iostream>
+#include <cstdlib>
+#include <string>
+#include <regex>
+
+using namespace std;
+
+string replaceSums(string s)
+{
+    regex pattern("(\\d+)(?:\\+(\\d+))");
+    smatch match;
+
+    while (regex_search(s, match, pattern))
+    {
+        int sum = 0;
+        for (size_t i = 1; i < match.size(); ++i)
+        {
+            sum += stoi(match[i]);
+        }
+        s = match.prefix().str() + to_string(sum) + match.suffix().str();
+    }
+
+    return s;
+}
+
+int main()
+{
+    string s;
+    cout << "Insert string: ";
+    getline(cin, s);
+
+    string ans = replaceSums(s);
+    cout << ans << endl;
+    return EXIT_SUCCESS;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+№7(а)
+#include <iostream>
+#include <string>
+#include <vector>
+#include <sstream>
+
+using namespace std;
+
+vector<string> expandString(const string& input) {
+    vector<string> res;
+    stringstream ss(input);
+    string beg,tmp,en;
+    getline(ss, beg, '{'); getline(ss, tmp, '}'); getline(ss, en);
+    stringstream ss_1(tmp);
+    string tmp2;
+    while (getline(ss_1, tmp2, ',')) {
+        res.push_back(beg + tmp2 + en);
+    }
+
+    return res;
+}
+
+int main() {
+    string input = "abc{def,,gh,ijkl}mn";
+    vector<string> expanded = expandString(input);
+
+    for (const string& str : expanded) {
+        cout << str << endl;
+    }
+    return 0;
+}
+
+///////////////////////////////////////////////////////////////////
