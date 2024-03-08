@@ -1,0 +1,111 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+
+using namespace std;
+
+class Polinomial {
+public:
+	int n; vector<double> coeff;
+	Polinomial() :n(0), coeff({0}) {}
+	Polinomial(int t, vector<double> c): n(t), coeff(c) {}
+
+	double coef(int t) {
+		if (t > coeff.size()) {
+			return 0;
+		}
+		else {
+			return coeff[t];
+		}
+	}
+	double &value(double t) {
+		vector<double>::iterator it;
+		double result=0;
+		for (int i=0; i < coeff.size(); i++) {
+			result += coeff[i] * pow(t,i);
+		}
+		return result;
+	}
+
+
+};
+
+Polinomial operator + (Polinomial a, Polinomial b) {
+	int size = max(a.n, b.n);
+	Polinomial res;
+	res.n = size;
+	res.coeff.resize(size + 1);
+	for (int i = 0; i <= size; i++) {
+		int c1 = (i <= a.n) ? a.coeff[i] : 0;
+		int c2 = (i <= b.n) ? b.coeff[i] : 0;
+		res.coeff[i] = c1 + c2;
+	}
+	return res;
+}
+
+Polinomial operator - (Polinomial a, Polinomial b) {
+	int size = max(a.n, b.n);
+	Polinomial res;
+	res.n = size;
+	res.coeff.resize(size + 1);
+	for (int i = 0; i <= size; i++) {
+		int c1 = (i <= a.n) ? a.coeff[i] : 0;
+		int c2 = (i <= b.n) ? b.coeff[i] : 0;
+		res.coeff[i] = c1 - c2;
+	}
+	return res;
+}
+
+Polinomial operator * (Polinomial a, Polinomial b) {
+	int size = a.n + b.n;
+	Polinomial res;
+	res.n = size;
+	res.coeff.resize(size + 1);
+	for (size_t i = 0; i <= a.n; i++) {
+		for (size_t j = 0; j <= b.n; j++) {
+			res.coeff[i + j] += a.coeff[i] * b.coeff[j];
+		}
+	}
+	return res;
+}
+
+istream& operator >> (istream& st, Polinomial &a) {
+	int n;
+	st >> n;
+	vector<double> res;
+	for (int i = 0; i <= n; i++) {
+		double c;
+		st >> c;
+		res.push_back(c);
+	}
+	a.n=n;
+	a.coeff=res;
+	return st;
+}
+
+ostream& operator << (ostream& st, Polinomial &a) {
+	for (auto elem:a.coeff) {
+		st << "[";
+		st << elem;
+	}
+	st << "]";
+	st << endl;
+	return st;
+}
+
+int main() {
+	Polinomial x;//(2,{100,21,33});
+	Polinomial y;//(3,{10,21,3,4});
+	cin >> x;
+	cin >> y;
+	double a = x.coef(1);
+	double b = x.value(2);
+	Polinomial c = x + y;
+	Polinomial d = x - y;
+	Polinomial e = x * y;
+	cout << a <<" "<< b << endl;
+	cout << x <<endl;
+	cout << y <<endl;
+
+}
