@@ -14,18 +14,33 @@ public:
 	Polinomial(int t, vector<double> c): n(t), coeff(c) {}
 	Polinomial(double x) :n(0), coeff({ x }) {}
 	Polinomial(const initializer_list<double>& t) :n(t.size() - 1), coeff(t){}
+	Polinomial(Polinomial&& x) :n (x.n), coeff(x.coeff){
+		x.n = 0;
+		x.coeff.clear();
+	}
 
-	/*Polinomial& operator = (const Polinomial& y) {
-		if (this == &y) {
+	Polinomial& operator= (Polinomial&& x) {
+		if (this == &x) {
 			return *this;
 		}
-		n = y.n;
-		coeff.resize(n + 1);
-		for (int i = 0; i <= n; i++) {
-			coeff[i] = y.coeff[i];
-		}
+
+		coeff.clear();
+		n = x.n;
+		coeff = x.coeff;
+
+		x.n = 0;
+		x.coeff.clear();
 		return *this;
-	}*/
+	}
+
+	double & operator () (double x) const {
+		double result = 0;
+		for (int i = 0; i < coeff.size(); i++) {
+			result += coeff[i] * pow(x, i);
+		}
+		return result;
+	}
+
 
 	/*Polinomial(const Polinomial& a) {//конструктор копирования
 		n = a.n;
@@ -56,17 +71,14 @@ public:
 		}
 	}*/
 
-	double value(double t) {
+	/*double value(double t) {
 		vector<double>::iterator it;
 		double result=0;
 		for (int i=0; i < coeff.size(); i++) {
 			result += coeff[i] * pow(t,i);
 		}
 		return result;
-	}
-
-	~Polinomial(){
-	}
+	}*/
 
 };
 
@@ -84,7 +96,7 @@ Polinomial operator + (Polinomial &a, Polinomial &b) {
 	return res;
 }
 
-Polinomial operator - (Polinomial a, Polinomial b) {
+Polinomial operator - (Polinomial &a, Polinomial &b) {
 	int size = max(a.n, b.n);
 	Polinomial res;
 	res.n = size;
@@ -97,7 +109,7 @@ Polinomial operator - (Polinomial a, Polinomial b) {
 	return res;
 }
 
-Polinomial operator * (Polinomial a, Polinomial b) {
+Polinomial operator* (Polinomial &a, Polinomial &b) {
 	int size = a.n + b.n;
 	Polinomial res;
 	res.n = size;
@@ -134,29 +146,33 @@ ostream& operator << (ostream& st, Polinomial &a) {
 	return st;
 }
 
+
 int main() {
 	setlocale(LC_ALL, "Russian");
 	Polinomial x;//(2,{100,21,33});
 	Polinomial y;//(3,{10,21,3,4});
+	Polinomial ea;//(2,{1,2,3});
 	Polinomial w(3);
 	cin >> x;
 	cin >> y;
+	cin >> ea;
+	x = move(ea);
 	double a = x[1];
-	double b = x.value(2);
-	Polinomial c = x + y;
-	Polinomial d = x - y;
-	Polinomial e = x * y;
+	double b = x(2);
+	Polinomial c(move(x + y));
+	Polinomial d(move(x - y));
+	Polinomial e(move(x * y));
 	cout <<"Коэфф по номеру " << a <<endl<< "Значение в точке " << b << endl;
 	cout <<"Многочлен 1 " << x << endl;
 	cout <<"Многочлен 2 " << y << endl;
+	cout << "Многочлен 3 " << ea << endl;
 	cout <<"Сумма " << c << endl;
 	cout <<"Разность " << d << endl;
 	cout <<"Произведение " << e << endl;
-	Polinomial z(x);//конструктор копирования
+	Polinomial z(move(x));//конструктор копирования
 	cout <<"Копия" << z << endl;
 	cout <<"Преобразование" << w << endl;
-	x = y;
-	cout <<"Присваивание" << x<<endl;
+	cout <<"Присваивание" << x <<endl;
 	Polinomial l{ 1,2,3,4,5 };
 	cout << l << endl;
 
