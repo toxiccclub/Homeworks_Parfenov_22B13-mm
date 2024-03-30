@@ -1,0 +1,111 @@
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <stack>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+bool is_number(const string& s)
+{
+	return !s.empty() && (s.find_first_not_of("0123456789") == s.npos);
+}
+
+
+string f1(string s) {
+	stack<string> st;
+	stringstream ss(s);
+	string part;
+	string res;
+
+	while (getline(ss, part, ' ')) {
+		if (is_number(part)) {
+			res+=part+" ";
+		}
+		else {
+			if(!st.empty()){
+				if (part == "+" || part == "-"||part == "(") {
+					st.push(part);
+				}
+				else if(part=="*"||part=="/"){
+					while ((st.top() != "+" && st.top() != "-" && st.top() != "(") && !st.empty()) {
+						res += st.top() + " ";
+						st.pop();
+					}
+					st.push(part);
+				}
+				else if (part == ")") {
+					while (st.top() != "(") {
+						res += st.top()+ " ";
+						st.pop();
+					}
+					st.pop();
+				}
+			}
+			else
+				st.push(part);
+
+		}
+	}
+	while (!st.empty()) {
+		res += st.top() + " ";
+		st.pop();
+	}
+
+	return res;
+
+}
+double res(string b, double num1, double num2) {
+	if (b == "+")
+		return num2 + num1;
+	else if (b == "-")
+		return num2 - num1;
+	else if (b == "*")
+		return num2 * num1;
+	else if (b == "/")
+		return num2 / num1;
+}
+
+int f2(const string& s) {
+	stack<double> st;
+	stringstream ss(s);
+	string part;
+	double result;
+
+	while (getline(ss, part, ' ')) {
+		if (is_number(part)) {
+			st.push(stoi(part));
+		}
+		else {
+			double num1, num2;
+			double result;
+			num1 = st.top();
+			st.pop();
+			num2 = st.top();
+			st.pop();
+			result = res(part, num1, num2);
+			st.push(result);
+		}
+	}
+	result = st.top();
+	return result;
+}
+
+double combo(string s) {
+	string s1;
+	double result;
+	s1 = f1(s);
+	cout << s1 << endl;
+	result = f2(s1);
+	return result;
+
+}
+
+int main() {
+	string s;
+	double res;
+	getline(cin, s);
+	res = combo(s);
+	cout << res << endl;
+}
