@@ -1,0 +1,160 @@
+######################################################################
+#include <iostream>
+
+using namespace std;
+
+
+class stack {
+public:
+	int size;
+	double* p;
+	int top;
+
+	stack() :size(0), p(nullptr), top(-1) {};
+	stack(int s) :size(s), p(new double[size]{0}), top(size) {};
+	
+};
+
+int is_full(stack s) {
+	if (s.top == 0) {
+		return 1;
+	}
+	else
+		return 0;
+}
+
+int isempty(stack s) {
+	if (s.top == s.size)
+		return 1;
+	else
+		return 0;
+}
+
+void push(stack &s,int x) {
+	if (is_full(s)) {
+		cout << "Stack is full" << endl;
+	}
+	else {
+		s.top--;
+		s.p[s.top] = x;
+	}
+}
+
+double pop(stack &s) {
+	double elem;
+	if (isempty(s)) {
+		cout << "Stack is empty";
+	}
+	else {
+		elem = s.p[s.top];
+		s.p[s.top] = 0;
+		s.top++;
+	}
+	return elem;
+}
+
+void print(stack s) {
+	cout << "Stack: " << endl;
+	for (int i = 0; i < s.size; i++) {
+		cout << s.p[i] << " ";
+	}
+	cout << endl;
+}
+
+int main() {
+	int size = 5;
+	stack s = ( size );
+	push(s, 1);
+	push(s, 2);
+	push(s, 3);
+	push(s, 4);
+	push(s, 5);
+	print(s);
+	push(s, 6);
+	double x = pop(s);
+	cout << x << endl;
+	print(s);
+
+	
+
+}
+
+#############################################################################################
+#include <iostream>
+
+using namespace std;
+
+struct Node {
+	double item;
+	Node* next;
+};
+
+class StackL {
+public:
+	Node* top;
+
+	StackL():top(nullptr) {}
+
+	void Push(double item) {
+		Node* p;
+		p = new Node;
+		p->item = item;
+		p->next = top;
+		top = p;
+	}
+
+	int size_of() {
+		int c = 0;
+		if (top == nullptr)
+			return 0;
+		else
+		{
+			Node* p = top;
+
+			while (p != nullptr) {
+				c++;
+				p = p->next;
+			}
+		}
+		return c;
+	}
+
+	void print_S() {
+		if (top == nullptr) {
+			cout << "Stack is empty." << endl;
+		}
+		else {
+			Node* p;
+			p = top;
+			while (p != nullptr) {
+				cout << p->item << " ";
+				p = p->next;
+			}
+			cout << endl;
+		}
+	}
+
+	double popS() {
+		if (top == nullptr) {
+			return 0;
+		}
+
+		double item;
+		item = top->item;
+		top = top->next;
+
+		return item;
+	}
+
+};
+
+int main() {
+	StackL x;
+	for (int i = 0; i <= 10; i++) {
+		x.Push(i);
+	}
+	cout << "Stack: "; x.print_S();
+	cout << "Size of stack: " << x.size_of() << endl;
+	cout << "Result of pop: " << x.popS() << endl;
+	cout << "Stack: "; x.print_S();
+}
