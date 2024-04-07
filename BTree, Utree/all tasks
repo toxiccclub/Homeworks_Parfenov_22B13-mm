@@ -1,0 +1,247 @@
+#include <iostream>
+
+using namespace std;
+
+struct BNode
+{
+	int data;
+	BNode* left, * right;
+	BNode(int d, BNode* l = nullptr, BNode* r = nullptr) :data(d), left(l), right(r) {}
+
+};
+
+void f_print(BNode* r, int indent = 0) // indent - отступ
+{
+	if (r == nullptr) return;
+	f_print(r->right, indent + 3);
+	for (int i = 0; i < indent; ++i)
+		cout << ' ';
+	cout << r->data << endl;
+	f_print(r->left, indent + 3);
+}
+
+struct BTree
+{
+	BNode* root; 
+	BTree(BNode* p) : root(p) {}
+
+	void print() // метод печати
+	{
+		f_print(root); // вызывает рекурсивную функцию
+	}
+
+	BNode* findL() {
+		BNode* tmp=root;
+		while (tmp!=nullptr && tmp->left != nullptr) {
+			tmp = tmp -> left;
+		}
+		return tmp;
+	}
+	BNode* findLG() {
+		if (root->left != nullptr) {
+			if (root->left->left != nullptr) {
+				return root->left->left;
+			}
+			else if (root->left->right != nullptr) {
+				return root->left->right;
+			}
+		}
+		if (root->right != nullptr) {
+			if (root->right->left != nullptr) {
+				return root->right->left;
+			}
+			else if (root->right->right != nullptr) {
+				return root->right->right;
+			}
+		}
+	}
+	BNode* rotateLeft() {
+		if (!root || !root->right) {
+			return nullptr;
+		}
+		BNode* tmp = root;
+		BNode* tmp1 = root->right->left;
+		root = root -> right;
+		tmp->right = tmp1;
+		root->left = tmp;
+	}
+
+	BNode* findLLeaf() {
+		BNode* tmp = root;
+		if (!tmp) {
+			return nullptr;
+		}
+		while (tmp->left) {
+			tmp = tmp->left;
+		}
+		while (tmp && (tmp->left || tmp->right)) {
+			if (tmp->left) {
+				tmp = tmp->left;
+			}
+			else if (tmp->right) {
+				tmp = tmp->right;
+			}
+		}
+		return tmp;
+	}
+	void del_leaf()
+	{
+		BNode* tmp2 = root;
+		BNode* tmp1 = root;
+		if (!tmp2) {
+			return;
+		}
+		while (tmp2->left) {
+			tmp1 = tmp2;
+			tmp2 = tmp2->left;
+		}
+		while (tmp2 && (tmp2->left || tmp2->right)) {
+			if (tmp2->left) {
+				tmp1 = tmp2;
+				tmp2 = tmp2->left;
+			}
+			else if (tmp2->right) {
+				tmp1 = tmp2;
+				tmp2 = tmp2->right;
+			}
+		}
+		if (tmp1->left != nullptr) {
+			tmp1->left = nullptr;
+		}
+		else {
+			tmp1->right = nullptr;
+		}
+		delete tmp2;
+		tmp2 = nullptr;
+		return;
+	}
+};
+
+int main() {
+	BNode* p1=new BNode( 10,nullptr,nullptr );
+	BNode* p2=new BNode( 5,nullptr,nullptr );
+	BNode* p3=new BNode( 15,nullptr,nullptr );
+	BNode* p4=new BNode( 3,nullptr,nullptr );
+	BNode* p5=new BNode( 7,p2,p1 );
+	BNode* p6=new BNode(221,p4,p3 );
+	BNode* p7=new BNode( 31, p6,p5 );
+
+	BTree tree(p7);
+	tree.print();
+	tree.rotateLeft();
+	//tree.del_leaf();
+	tree.print();
+	BNode* the_left = tree.findL();
+	BNode* the_left_g = tree.findLG();
+	BNode* the_leaf = tree.findLLeaf();
+	if (the_left != nullptr) {
+		cout << "The left node: " << the_left->data << endl;
+	}
+	else
+		cout << "Not exist" << endl;
+	if (the_left_g != nullptr) {
+		cout << "The left grand: " << the_left_g->data << endl;
+	}
+	else
+		cout << "Not exist" << endl;
+	if (the_leaf != nullptr) {
+		cout << "The left leaf: " << the_leaf->data << endl;
+	}
+	else
+		cout << "Not exist" << endl;
+
+}
+
+
+########################################################################################################################
+#include <iostream>
+
+using namespace std;
+
+struct BNode
+{
+	int data;
+	BNode* left, * right, *grand;
+	BNode(int d, BNode* l = nullptr, BNode* r = nullptr,BNode*g=nullptr) :data(d), left(l), right(r),grand(g) {}
+
+};
+
+void f_print(BNode* r, int indent = 0) // indent - отступ
+{
+	if (r == nullptr) return;
+	f_print(r->right, indent + 3);
+	for (int i = 0; i < indent; ++i)
+		cout << ' ';
+	cout << r->data << endl;
+	f_print(r->left, indent + 3);
+}
+
+struct BTree
+{
+	BNode* root;
+	BTree(BNode* p) : root(p) {}
+
+	void print() // метод печати
+	{
+		f_print(root); // вызывает рекурсивную функцию
+	}
+	BNode* rotateLeft() {
+		if (!root || !root->right) {
+			return nullptr;
+		}
+		BNode* tmp = root;
+		BNode* tmp1 = root->right->left;
+		tmp1->grand = tmp;
+		root = root->right;
+		root->grand = nullptr;
+		tmp->right = tmp1;
+		tmp->grand = root;
+		root->left = tmp;
+	}
+	void deleaf(BNode* ptr) {
+		BNode* tmp1 = root;
+		if (ptr->left != nullptr) {
+			tmp1 = ptr->left;
+		}
+		else {
+			tmp1 = ptr->right;
+		}
+		BNode* tmp2 = ptr->grand;
+		if (tmp2->left == ptr) {
+			tmp2->left = tmp1;
+			tmp1->grand = tmp2;
+		}
+		else {
+			tmp2->right = tmp1;
+			tmp1->grand = tmp2;
+		}
+		delete ptr;
+	}
+	
+};
+
+int main() {
+	BNode* p1 = new BNode(10, nullptr, nullptr,nullptr);
+	BNode* p2 = new BNode(5, nullptr, nullptr,nullptr);
+	BNode* p3 = new BNode(15, nullptr, nullptr,nullptr);
+	//BNode* p4 = new BNode(3, nullptr, nullptr,nullptr);
+	BNode* p5 = new BNode(7, p2, p1);
+	BNode* p6 = new BNode(221, nullptr, p3);
+	BNode* p7 = new BNode(31, p6, p5);
+	p1->grand = p5;
+	p2->grand = p5;
+	p3->grand = p6;
+	//p4->grand = p6;
+	p5->grand = p7;
+	p6->grand = p7;
+
+	BTree tree(p7);
+	tree.print();
+	tree.rotateLeft();
+	//tree.deleaf(p6);
+	cout << "########################" << endl;
+	tree.print();
+	
+}
+
+
